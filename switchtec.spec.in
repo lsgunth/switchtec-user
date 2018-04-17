@@ -1,0 +1,41 @@
+Name: 		switchtec
+Version: 	@@VERSION@@
+Release: 	@@RELEASE@@%{?dist}
+Summary:  	Userspace code for the Microsemi PCIe switch
+License: 	MIT
+Group: 		Development/Tools
+URL: 		https://github.com/Microsemi/switchtec-user
+Source: 	switchtec-@@VERSION@@-@@RELEASE@@.tar.xz
+Provides:	switchtec
+BuildRoot:	%{_tmppath}/%{name}-%{version}-root
+
+%description
+The code hosted here provides an easy to use CLI and C library for 
+communicating with Microsemi's Switchtec management interface.
+
+%prep
+%setup -n switchtec-@@VERSION@@-@@RELEASE@@
+
+%build
+%configure --with-curses
+make
+
+%install
+rm -rf $RPM_BUILD_ROOT
+%makeinstall DESTDIR=%{buildroot} LDCONFIG=
+ln -sfn /usr/local/lib/libswitchtec.so.@@VERSION@@. %{buildroot}/usr/local/lib/libswitchtec.so
+
+%files
+%defattr(-,root,root)
+/usr/local/bin/switchtec
+/usr/local/lib/libswitchtec.*
+/usr/local/include/switchtec/*.*
+/etc/bash_completion.d/switchtec
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%changelog
+* Mon Apr 16 2018 Boris Glimcher <Boris.Glimcher@emc.com>
+- Initial RPM spec
+
